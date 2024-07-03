@@ -9,6 +9,10 @@ struct ContentView: View {
     @State private var savedCode = ""
     @State private var savedCodeName = ""
     @State private var text = ""
+    @Environment(\.colorScheme) var colorScheme
+    var accentColor: Color {
+            colorScheme == .dark ? Color.white : Color.black
+        }
 
     @Environment(\.managedObjectContext) private var viewContext
     
@@ -18,69 +22,74 @@ struct ContentView: View {
     private var items: FetchedResults<Item>
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: -10) {
-                List {
-                                ForEach(items) { item in
-                                    NavigationLink(
-                                        destination: VStack {
-                                                        Text("\(item.barcodeID ?? "N/A")")
-                                                .font(.title)
-                                                        
-                                                        if let barcodeImage = generateBarcodeImage(from: item.barcodeID ?? "N/A") {
-                                                            barcodeImage
-                                                                .resizable()
-                                                                .aspectRatio(contentMode: .fit)
-                                                                .frame(width: 200, height: 100)
-                                                                .padding(.top)
-                                                            Text("\(item.barcodeID ?? "N/A")")
-                                                                .font(.footnote).tint(.gray)
-                                                        }
-                                                    }
-                                                ) {
-                                        HStack {
-                                            if let barcodeImage = generateBarcodeImage(from: String(item.barcodeID ?? "Null")) {
-                                                barcodeImage
-                                                    .resizable()
-                                                    .frame(width: 100, height: 50) // Adjust the size as needed
-                                                    .padding(.trailing, 10)
-                                            }
-                                            VStack(alignment: .leading) {
-                                                Text("\(item.barcodeName ?? "N/A")") // Assuming barcodeName is an optional String
-                                                    .font(.headline)
-                                                Text("Barcode ID: \(item.barcodeID ?? "N/A")")
-
-                                                    .font(.subheadline)
-                                            }
-                                        }
+        TabView {
+            NavigationView {
+                VStack(spacing: -10) {
+                    List {
+                        ForEach(items) { item in
+                            NavigationLink(
+                                destination: VStack {
+                                    Text("\(item.barcodeID ?? "N/A")")
+                                        .font(.title)
+                                    
+                                    if let barcodeImage = generateBarcodeImage(from: item.barcodeID ?? "N/A") {
+                                        barcodeImage
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fit)
+                                            .frame(width: 200, height: 100)
+                                            .padding(.top)
+                                        Text("\(item.barcodeID ?? "N/A")")
+                                            .font(.footnote).tint(.gray)
                                     }
                                 }
-                    .onDelete(perform: deleteItems)
-                }
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        EditButton()
-                    }
-                    ToolbarItem {
-                        Button {
-                            isPresentingScanner = false
-                            isPresentingNewCode = true // Add this state variable
-                        } label: {
-                            Image(systemName: "plus")
+                            ) {
+                                HStack {
+                                    if let barcodeImage = generateBarcodeImage(from: String(item.barcodeID ?? "Null")) {
+                                        barcodeImage
+                                            .resizable()
+                                            .frame(width: 100, height: 50) // Adjust the size as needed
+                                            .padding(.trailing, 10)
+                                    }
+                                    VStack(alignment: .leading) {
+                                        Text("\(item.barcodeName ?? "N/A")") // Assuming barcodeName is an optional String
+                                            .font(.headline)
+                                        Text("Barcode ID: \(item.barcodeID ?? "N/A")")
+                                            .font(.subheadline)
+                                    }
+                                }
+                            }
                         }
-                        .sheet(isPresented: $isPresentingNewCode) { // Update the sheet to open newCode
-                            newCode
+                        .onDelete(perform: deleteItems)
+                    }
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            EditButton()
+                        }
+                        ToolbarItem {
+                            Button {
+                                isPresentingScanner = false
+                                isPresentingNewCode = true // Add this state variable
+                            } label: {
+                                Image(systemName: "plus")
+                            }
+                            .sheet(isPresented: $isPresentingNewCode) { // Update the sheet to open newCode
+                                newCode
+                            }
                         }
                     }
                 }
-
             }
-        }
+            .tabItem {
+                Label("Barcodes", systemImage: "barcode.viewfinder")
+            }
+
+            SettingsView()
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape")
+                }
+        }.accentColor(accentColor)
     }
     
-        
-        
-        
     var newCode: some View {
         VStack {
             TextField("Enter barcode name", text: $text)
@@ -94,7 +103,12 @@ struct ContentView: View {
             }
             .sheet(isPresented: $isPresentingScanner) {
                 scannerSheet
-            }.font(.system(size: 28.0)).padding(.all).tint(.blue).background(savedCode.isEmpty ? Color.gray : Color.green).cornerRadius(28.0)
+            }
+            .font(.system(size: 28.0))
+            .padding(.all)
+            .tint(.blue)
+            .background(savedCode.isEmpty ? Color(.tertiaryLabel) : Color.green)
+            .cornerRadius(12.0)
             Button("Save", systemImage: "square.and.arrow.down.fill") {
                 
                 
@@ -119,9 +133,7 @@ struct ContentView: View {
                 }
 
                 isPresentingNewCode = false
-            }.font(.system(size: 28.0)).padding(.all).tint(.blue).background(.gray).cornerRadius(28.0)
-            
-
+            }.font(.system(size: 28.0)).padding(.all).tint(.blue).background(Color(.tertiaryLabel)).cornerRadius(12.0)
         }
     }
 

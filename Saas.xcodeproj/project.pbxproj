@@ -11,6 +11,7 @@
 		FA32F69F2A9FD936007C2B3E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA32F69E2A9FD936007C2B3E /* ContentView.swift */; };
 		FA32F6A12A9FD938007C2B3E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA32F6A02A9FD938007C2B3E /* Assets.xcassets */; };
 		FA32F6A42A9FD938007C2B3E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FA32F6A32A9FD938007C2B3E /* Preview Assets.xcassets */; };
+		FA902CE92C35B52F00AA1F0B /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA902CE82C35B52F00AA1F0B /* SettingsView.swift */; };
 		FAB3D7D02AE18E8C003787F5 /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = FAB3D7CF2AE18E8C003787F5 /* CodeScanner */; };
 		FAEFAC072B00B4490098F003 /* barcodeModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = FAEFAC052B00B4490098F003 /* barcodeModel.xcdatamodeld */; };
 		FAEFAC2A2B017D070098F003 /* Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAEFAC292B017D070098F003 /* Persistence.swift */; };
@@ -24,6 +25,7 @@
 		FA32F6A32A9FD938007C2B3E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		FA32F6B02AA04B66007C2B3E /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		FA32F6B22AA04B66007C2B3E /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		FA902CE82C35B52F00AA1F0B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		FAEFAC062B00B4490098F003 /* barcodeModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = barcodeModel.xcdatamodel; sourceTree = "<group>"; };
 		FAEFAC292B017D070098F003 /* Persistence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		FAEFAC2D2B034B5D0098F003 /* barcodeModel 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "barcodeModel 2.xcdatamodel"; sourceTree = "<group>"; };
@@ -66,6 +68,7 @@
 				FAEFAC292B017D070098F003 /* Persistence.swift */,
 				FA32F69C2A9FD936007C2B3E /* SaasApp.swift */,
 				FA32F69E2A9FD936007C2B3E /* ContentView.swift */,
+				FA902CE82C35B52F00AA1F0B /* SettingsView.swift */,
 				FA32F6A02A9FD938007C2B3E /* Assets.xcassets */,
 				FA32F6A22A9FD938007C2B3E /* Preview Content */,
 			);
@@ -166,6 +169,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FA902CE92C35B52F00AA1F0B /* SettingsView.swift in Sources */,
 				FA32F69F2A9FD936007C2B3E /* ContentView.swift in Sources */,
 				FAEFAC2A2B017D070098F003 /* Persistence.swift in Sources */,
 				FA32F69D2A9FD936007C2B3E /* SaasApp.swift in Sources */,

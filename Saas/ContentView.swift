@@ -29,14 +29,14 @@ struct ContentView: View {
                         ForEach(items) { item in
                             NavigationLink(
                                 destination: VStack {
-                                    Text("\(item.barcodeID ?? "N/A")")
+                                    Text("\(item.barcodeName ?? "N/A")")
                                         .font(.title)
                                     
                                     if let barcodeImage = generateBarcodeImage(from: item.barcodeID ?? "N/A") {
                                         barcodeImage
                                             .resizable()
                                             .aspectRatio(contentMode: .fit)
-                                            .frame(width: 200, height: 100)
+                                            .frame(width: 300, height: 200)
                                             .padding(.top)
                                         Text("\(item.barcodeID ?? "N/A")")
                                             .font(.footnote).tint(.gray)
@@ -91,14 +91,17 @@ struct ContentView: View {
     }
     
     var newCode: some View {
-        VStack {
+        VStack() {
             TextField("Enter barcode name", text: $text)
-                .textFieldStyle(.plain)
+                .textFieldStyle(.automatic)
                 .multilineTextAlignment(.center)
                 .padding()
+                
+                
             
             
-            Button("scan", systemImage: "barcode.viewfinder") {
+            
+            Button("Scan", systemImage: "barcode.viewfinder") {
                 isPresentingScanner = true
             }
             .sheet(isPresented: $isPresentingScanner) {
@@ -106,7 +109,7 @@ struct ContentView: View {
             }
             .font(.system(size: 28.0))
             .padding(.all)
-            .tint(.blue)
+            .tint(Color("AccentColor"))
             .background(savedCode.isEmpty ? Color(.tertiaryLabel) : Color.green)
             .cornerRadius(12.0)
             Button("Save", systemImage: "square.and.arrow.down.fill") {
@@ -133,7 +136,7 @@ struct ContentView: View {
                 }
 
                 isPresentingNewCode = false
-            }.font(.system(size: 28.0)).padding(.all).tint(.blue).background(Color(.tertiaryLabel)).cornerRadius(12.0)
+            }.font(.system(size: 28.0)).padding(.all).tint(Color("AccentColor")).background(Color(.tertiaryLabel)).cornerRadius(12.0)
         }
     }
 
@@ -185,7 +188,7 @@ struct BarcodeGenerator {
         if let filter = CIFilter(name: "CICode128BarcodeGenerator") {
             filter.setValue(data, forKey: "inputMessage")
             if let output = filter.outputImage {
-                let transform = CGAffineTransform(scaleX: 3, y: 3)
+                let transform = CGAffineTransform(scaleX: 10, y: 10)
                 let scaledOutput = output.transformed(by: transform)
                 if let cgImage = CIContext().createCGImage(scaledOutput, from: scaledOutput.extent) {
                     return UIImage(cgImage: cgImage)

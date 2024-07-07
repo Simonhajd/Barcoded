@@ -28,14 +28,15 @@ struct SettingsView: View {
                 }
                 Section {
                     NavigationLink(destination: Text("Suggest a Change ")) {
-                        Label("Customer Support", systemImage: "phone")
+                        Label("Suggest a Change", systemImage: "envelope")
                     }
-                    NavigationLink(destination: Text("Share the App")) {
+                    ShareLink(item: URL(string: "https://developer.apple.com/xcode/swiftui/")!) {
                         Label("Share the App", systemImage: "square.and.arrow.up")
                     }
-                    NavigationLink(destination: Text("Rate the App")) {
+                    ShareLink(item: URL(string: "https://developer.apple.com/xcode/swiftui/")!) {
                         Label("Rate the App", systemImage: "star")
                     }
+                    
                 }
             }
             .navigationTitle("Settings")

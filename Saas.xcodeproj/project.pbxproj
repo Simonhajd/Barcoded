@@ -20,7 +20,7 @@
 /* Begin PBXFileReference section */
 		FA32F6992A9FD936007C2B3E /* Saas.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Saas.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA32F69C2A9FD936007C2B3E /* SaasApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaasApp.swift; sourceTree = "<group>"; };
-		FA32F69E2A9FD936007C2B3E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		FA32F69E2A9FD936007C2B3E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; usesTabs = 0; };
 		FA32F6A02A9FD938007C2B3E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FA32F6A32A9FD938007C2B3E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		FA32F6B02AA04B66007C2B3E /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };

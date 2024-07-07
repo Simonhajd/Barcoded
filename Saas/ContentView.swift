@@ -10,6 +10,8 @@ struct ContentView: View {
     @State private var savedCodeName = ""
     @State private var text = ""
     @Environment(\.colorScheme) var colorScheme
+    @State private var isFullScreen: Bool = false
+    @State private var rotationAngle: Double = 0
     var accentColor: Color {
             colorScheme == .dark ? Color.white : Color.black
         }
@@ -33,11 +35,29 @@ struct ContentView: View {
                                         .font(.title)
                                     
                                     if let barcodeImage = generateBarcodeImage(from: item.barcodeID ?? "N/A") {
-                                        barcodeImage
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fit)
-                                            .frame(width: 300, height: 200)
-                                            .padding(.top)
+                                        GeometryReader { geometry in
+                                                    VStack {
+                                                        barcodeImage
+                                                            .resizable()
+                                                                                .aspectRatio(contentMode: .fit)
+                                                        
+                                                                                .frame(width: isFullScreen ? geometry.size.width * 2.5 : 300,
+                                                                                       height: isFullScreen ? geometry.size.height * 2.5 : 200)
+                                                                    
+                                                                                .padding(.top)
+                                                                                .rotationEffect(.degrees(rotationAngle))
+                                                                                .offset(x: isFullScreen ? 0 : 0, y: isFullScreen ? 0 : 0)
+                                                                                .onTapGesture {
+                                                                                    withAnimation {
+                                                                                        isFullScreen.toggle()
+                                                                                        rotationAngle += 90
+                                                                                    }
+                                                                                }
+                                                                        }
+                                                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                                                    }
+                                                                    .edgesIgnoringSafeArea(isFullScreen ? .all : .init())
+                                           
                                         Text("\(item.barcodeID ?? "N/A")")
                                             .font(.footnote).tint(.gray)
                                     }
@@ -49,6 +69,7 @@ struct ContentView: View {
                                             .resizable()
                                             .frame(width: 100, height: 50) // Adjust the size as needed
                                             .padding(.trailing, 10)
+                                        
                                     }
                                     VStack(alignment: .leading) {
                                         Text("\(item.barcodeName ?? "N/A")") // Assuming barcodeName is an optional String

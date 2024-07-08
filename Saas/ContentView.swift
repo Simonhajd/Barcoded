@@ -31,35 +31,39 @@ struct ContentView: View {
                         ForEach(items) { item in
                             NavigationLink(
                                 destination: VStack {
-                                    Text("\(item.barcodeName ?? "N/A")")
-                                        .font(.title)
+                                    
+                                    if !isFullScreen {
+                                        Text("\(item.barcodeName ?? "N/A")")
+                                            .font(.title)
+                                    }
+                                        
                                     
                                     if let barcodeImage = generateBarcodeImage(from: item.barcodeID ?? "N/A") {
-                                        GeometryReader { geometry in
+                                        
                                                     VStack {
                                                         barcodeImage
                                                             .resizable()
                                                                                 .aspectRatio(contentMode: .fit)
-                                                        
-                                                                                .frame(width: isFullScreen ? geometry.size.width * 2.5 : 300,
-                                                                                       height: isFullScreen ? geometry.size.height * 2.5 : 200)
+                                                                                .scaleEffect(x: isFullScreen ? 1.5 : 0.75, y: isFullScreen ? 1.5 : 0.75)
+                                                                                //.frame(width: isFullScreen ? geometry.size.width * 2.5 : 300,
+                                                                                       //height: isFullScreen ? geometry.size.height * 2.5 : 200)
                                                                     
                                                                                 .padding(.top)
                                                                                 .rotationEffect(.degrees(rotationAngle))
-                                                                                .offset(x: isFullScreen ? 0 : 0, y: isFullScreen ? 0 : 0)
+                                                                                
                                                                                 .onTapGesture {
-                                                                                    withAnimation {
+                                                                                    withAnimation(.easeInOut(duration: 0.5)) {
                                                                                         isFullScreen.toggle()
                                                                                         rotationAngle += 90
                                                                                     }
                                                                                 }
                                                                         }
-                                                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                                                    }
-                                                                    .edgesIgnoringSafeArea(isFullScreen ? .all : .init())
-                                           
-                                        Text("\(item.barcodeID ?? "N/A")")
-                                            .font(.footnote).tint(.gray)
+                                                                        
+                                                                    
+                                        if !isFullScreen {
+                                            Text("\(item.barcodeID ?? "N/A")")
+                                                .font(.footnote).tint(.gray)
+                                        }
                                     }
                                 }
                             ) {
@@ -106,7 +110,8 @@ struct ContentView: View {
 
             SettingsView()
                 .tabItem {
-                    Label("Settings", systemImage: "gearshape")
+                    Label("Settings", systemImage: "gear")
+                    //Label("Settings", systemImage: "gearshape")
                 }
         }.accentColor(accentColor)
     }

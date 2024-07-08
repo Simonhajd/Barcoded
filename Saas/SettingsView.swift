@@ -22,9 +22,7 @@ struct SettingsView: View {
                     NavigationLink(destination: Text("Privacy Policy")) {
                         Label("Privacy Policy", systemImage: "hand.raised")
                     }
-                    NavigationLink(destination: Text("Baggage Information")) {
-                        Label("Baggage Information", systemImage: "bag")
-                    }
+                    
                 }
                 Section {
                     NavigationLink(destination: Text("Suggest a Change ")) {

@@ -1,6 +1,33 @@
 import SwiftUI
 import CodeScanner
 import CoreData
+import AVFoundation
+
+enum BarcodeType {
+    case code128
+    case qrCode
+    case pdf417
+    case aztec
+    case ean13
+    case ean8
+    
+    var filterName: String {
+        switch self {
+        case .code128:
+            return "CICode128BarcodeGenerator"
+        case .qrCode:
+            return "CIQRCodeGenerator"
+        case .pdf417:
+            return "CIPDF417BarcodeGenerator"
+        case .aztec:
+            return "CIAztecCodeGenerator"
+        case .ean13:
+            return "CIEAN13BarcodeGenerator"
+        case .ean8:
+            return "CIEAN8BarcodeGenerator"
+        }
+    }
+}
 
 struct ContentView: View {
     @State private var isPresentingScanner = false
@@ -8,6 +35,7 @@ struct ContentView: View {
     @State private var scannedCode = "Unscanned"
     @State private var savedCode = ""
     @State private var savedCodeName = ""
+    @State private var CodeType = ""
     @State private var text = ""
     @Environment(\.colorScheme) var colorScheme
     @State private var isFullScreen: Bool = false
@@ -37,29 +65,22 @@ struct ContentView: View {
                                             .font(.title)
                                     }
                                         
-                                    
-                                    if let barcodeImage = generateBarcodeImage(from: item.barcodeID ?? "N/A") {
+                                    if let barcodeImage = generateBarcodeImage(from: item.barcodeID ?? "N/A", type: .code128) {
+                                        VStack {
+                                            barcodeImage
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fit)
+                                                .scaleEffect(x: isFullScreen ? 1.5 : 0.75, y: isFullScreen ? 1.5 : 0.75)
+                                                .padding(.top)
+                                                .rotationEffect(.degrees(rotationAngle))
+                                                .onTapGesture {
+                                                    withAnimation(.easeInOut(duration: 0.5)) {
+                                                        isFullScreen.toggle()
+                                                        rotationAngle += 90
+                                                    }
+                                                }
+                                        }
                                         
-                                                    VStack {
-                                                        barcodeImage
-                                                            .resizable()
-                                                                                .aspectRatio(contentMode: .fit)
-                                                                                .scaleEffect(x: isFullScreen ? 1.5 : 0.75, y: isFullScreen ? 1.5 : 0.75)
-                                                                                //.frame(width: isFullScreen ? geometry.size.width * 2.5 : 300,
-                                                                                       //height: isFullScreen ? geometry.size.height * 2.5 : 200)
-                                                                    
-                                                                                .padding(.top)
-                                                                                .rotationEffect(.degrees(rotationAngle))
-                                                                                
-                                                                                .onTapGesture {
-                                                                                    withAnimation(.easeInOut(duration: 0.5)) {
-                                                                                        isFullScreen.toggle()
-                                                                                        rotationAngle += 90
-                                                                                    }
-                                                                                }
-                                                                        }
-                                                                        
-                                                                    
                                         if !isFullScreen {
                                             Text("\(item.barcodeID ?? "N/A")")
                                                 .font(.footnote).tint(.gray)
@@ -68,7 +89,7 @@ struct ContentView: View {
                                 }
                             ) {
                                 HStack {
-                                    if let barcodeImage = generateBarcodeImage(from: String(item.barcodeID ?? "Null")) {
+                                    if let barcodeImage = generateBarcodeImage(from: String(item.barcodeID ?? "Null"), type: .code128) {
                                         barcodeImage
                                             .resizable()
                                             .frame(width: 100, height: 50) // Adjust the size as needed
@@ -123,10 +144,6 @@ struct ContentView: View {
                 .multilineTextAlignment(.center)
                 .padding()
                 
-                
-            
-            
-            
             Button("Scan", systemImage: "barcode.viewfinder") {
                 isPresentingScanner = true
             }
@@ -139,8 +156,6 @@ struct ContentView: View {
             .background(savedCode.isEmpty ? Color(.tertiaryLabel) : Color.green)
             .cornerRadius(12.0)
             Button("Save", systemImage: "square.and.arrow.down.fill") {
-                
-                
                 if !text.isEmpty {
                     savedCodeName = text
                 } else {
@@ -151,7 +166,6 @@ struct ContentView: View {
                 newItem.barcodeName = text
                 newItem.barcodeID = (savedCode)
 
-                
                 do {
                     try viewContext.save()
                     text = ""
@@ -170,12 +184,16 @@ struct ContentView: View {
     var scannerSheet: some View {
         ZStack {
             CodeScannerView(
-                codeTypes: [.code128],
+                codeTypes: [.code128, .qr, .ean8, .ean13, .pdf417, .aztec],
+                showViewfinder: true,
+                simulatedData: "Paul Hudson",
+                
+                // Add more types as needed
                 completion: { result in
                     if case let .success(code) = result {
                         scannedCode = code.string
                         savedCode = code.string
-                        
+                        CodeType = code.string
                         isPresentingScanner = false
                     }
                 }
@@ -187,7 +205,6 @@ struct ContentView: View {
                 .frame(width: 120, height: 90)
         }
     }
-    
     
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
@@ -202,17 +219,23 @@ struct ContentView: View {
         }
     }
     
-    func generateBarcodeImage(from code: String) -> Image? {
-        let barcode = BarcodeGenerator.generateBarcode(from: "\(code)")
+    func generateBarcodeImage(from code: String, type: BarcodeType) -> Image? {
+        let barcode = BarcodeGenerator.generateBarcode(from: code, type: type)
         return Image(uiImage: barcode)
     }
 }
 
 struct BarcodeGenerator {
-    static func generateBarcode(from string: String) -> UIImage {
+    static func generateBarcode(from string: String, type: BarcodeType) -> UIImage {
         let data = string.data(using: .ascii)
-        if let filter = CIFilter(name: "CICode128BarcodeGenerator") {
+        
+        if let filter = CIFilter(name: type.filterName) {
             filter.setValue(data, forKey: "inputMessage")
+            
+            if type == .qrCode {
+                filter.setValue("M", forKey: "inputCorrectionLevel")
+            }
+            
             if let output = filter.outputImage {
                 let transform = CGAffineTransform(scaleX: 10, y: 10)
                 let scaledOutput = output.transformed(by: transform)

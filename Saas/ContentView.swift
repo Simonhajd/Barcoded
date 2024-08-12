@@ -3,13 +3,13 @@ import CodeScanner
 import CoreData
 import AVFoundation
 
-enum BarcodeType {
-    case code128
-    case qrCode
-    case pdf417
-    case aztec
-    case ean13
-    case ean8
+enum BarcodeType: String {
+    case code128 = "org.iso.Code128"
+    case qrCode = "org.iso.QRCode"
+    case pdf417 = "org.iso.PDF417"
+    case aztec = "org.iso.Aztec"
+    case ean13 = "org.gs1.EAN-13"
+    case ean8 = "org.iso.EAN8"
     
     var filterName: String {
         switch self {
@@ -22,12 +22,31 @@ enum BarcodeType {
         case .aztec:
             return "CIAztecCodeGenerator"
         case .ean13:
-            return "CIEAN13BarcodeGenerator"
+            return "CIEAN13BarcodeGenerator" //ciean13barcodegenerator may not be real or may be under a different name
         case .ean8:
             return "CIEAN8BarcodeGenerator"
         }
     }
-}
+    
+    init?(from string: String) {
+        switch string {
+        case "org.iso.Code128":
+            self = .code128
+        case "org.iso.QRCode":
+            self = .qrCode
+        case "org.iso.PDF417":
+            self = .pdf417
+        case "org.iso.Aztec":
+            self = .aztec
+        case "org.gs1.EAN-13":
+            self = .ean13
+        case "org.iso.EAN8":
+            self = .ean8
+        default:
+            return nil
+        }
+    }
+} 
 
 struct ContentView: View {
     @State private var isPresentingScanner = false
@@ -35,7 +54,7 @@ struct ContentView: View {
     @State private var scannedCode = "Unscanned"
     @State private var savedCode = ""
     @State private var savedCodeName = ""
-    @State private var CodeType = ""
+    @State private var codeType = ""
     @State private var text = ""
     @Environment(\.colorScheme) var colorScheme
     @State private var isFullScreen: Bool = false
@@ -63,9 +82,14 @@ struct ContentView: View {
                                     if !isFullScreen {
                                         Text("\(item.barcodeName ?? "N/A")")
                                             .font(.title)
+                                        Text("\(item.barcodeType ?? "N/A")")
+                                            .font(.title)
+
                                     }
+                                    
                                         
-                                    if let barcodeImage = generateBarcodeImage(from: item.barcodeID ?? "N/A", type: .code128) {
+                                    if let barcodeType = BarcodeType(from: item.barcodeType ?? ""),
+                                        let barcodeImage = generateBarcodeImage(from: item.barcodeID ?? "N/A", type: barcodeType) {
                                         VStack {
                                             barcodeImage
                                                 .resizable()
@@ -89,18 +113,22 @@ struct ContentView: View {
                                 }
                             ) {
                                 HStack {
-                                    if let barcodeImage = generateBarcodeImage(from: String(item.barcodeID ?? "Null"), type: .code128) {
+                                    if let barcodeType = BarcodeType(from: item.barcodeType ?? ""),
+                                       let barcodeImage = generateBarcodeImage(from: String(item.barcodeID ?? "Null"), type: barcodeType) {
                                         barcodeImage
                                             .resizable()
+                                            .aspectRatio(contentMode: .fit)
                                             .frame(width: 100, height: 50) // Adjust the size as needed
                                             .padding(.trailing, 10)
-                                        
+                                            .layoutPriority(1) // Ensure the image retains its size
                                     }
                                     VStack(alignment: .leading) {
                                         Text("\(item.barcodeName ?? "N/A")") // Assuming barcodeName is an optional String
                                             .font(.headline)
+                                            .layoutPriority(2) // Give higher priority to the text
                                         Text("Barcode ID: \(item.barcodeID ?? "N/A")")
                                             .font(.subheadline)
+                                            .layoutPriority(2) // Give higher priority to the text
                                     }
                                 }
                             }
@@ -165,6 +193,7 @@ struct ContentView: View {
                 let newItem = Item(context: viewContext)
                 newItem.barcodeName = text
                 newItem.barcodeID = (savedCode)
+                newItem.barcodeType = (codeType)
 
                 do {
                     try viewContext.save()
@@ -185,7 +214,7 @@ struct ContentView: View {
         ZStack {
             CodeScannerView(
                 codeTypes: [.code128, .qr, .ean8, .ean13, .pdf417, .aztec],
-                showViewfinder: true,
+                showViewfinder: false,
                 simulatedData: "Paul Hudson",
                 
                 // Add more types as needed
@@ -193,7 +222,7 @@ struct ContentView: View {
                     if case let .success(code) = result {
                         scannedCode = code.string
                         savedCode = code.string
-                        CodeType = code.string
+                        codeType = code.type.rawValue
                         isPresentingScanner = false
                     }
                 }

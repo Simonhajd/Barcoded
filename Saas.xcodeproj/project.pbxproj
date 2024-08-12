@@ -25,6 +25,7 @@
 		FA32F6A32A9FD938007C2B3E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		FA32F6B02AA04B66007C2B3E /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		FA32F6B22AA04B66007C2B3E /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		FA6C07B22C3CDD6300C8EE37 /* barcodeModel 3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "barcodeModel 3.xcdatamodel"; sourceTree = "<group>"; };
 		FA902CE82C35B52F00AA1F0B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		FAEFAC062B00B4490098F003 /* barcodeModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = barcodeModel.xcdatamodel; sourceTree = "<group>"; };
 		FAEFAC292B017D070098F003 /* Persistence.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
@@ -427,10 +428,11 @@
 		FAEFAC052B00B4490098F003 /* barcodeModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				FA6C07B22C3CDD6300C8EE37 /* barcodeModel 3.xcdatamodel */,
 				FAEFAC2D2B034B5D0098F003 /* barcodeModel 2.xcdatamodel */,
 				FAEFAC062B00B4490098F003 /* barcodeModel.xcdatamodel */,
 			);
-			currentVersion = FAEFAC2D2B034B5D0098F003 /* barcodeModel 2.xcdatamodel */;
+			currentVersion = FA6C07B22C3CDD6300C8EE37 /* barcodeModel 3.xcdatamodel */;
 			path = barcodeModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

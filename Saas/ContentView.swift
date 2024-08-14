@@ -21,10 +21,9 @@ enum BarcodeType: String {
             return "CIPDF417BarcodeGenerator"
         case .aztec:
             return "CIAztecCodeGenerator"
-        case .ean13:
-            return "CIEAN13BarcodeGenerator" //ciean13barcodegenerator may not be real or may be under a different name
-        case .ean8:
-            return "CIEAN8BarcodeGenerator"
+        case .ean13, .ean8:
+            return "BarcodeUnsupported" //ciean13barcodegenerator may not be real or may be under a different name
+
         }
     }
     
@@ -78,43 +77,42 @@ struct ContentView: View {
                         ForEach(items) { item in
                             NavigationLink(
                                 destination: VStack {
-                                    
-                                    if !isFullScreen {
-                                        Text("\(item.barcodeName ?? "N/A")")
-                                            .font(.title)
-                                        Text("\(item.barcodeType ?? "N/A")")
-                                            .font(.title)
-
-                                    }
-                                    
-                                        
                                     if let barcodeType = BarcodeType(from: item.barcodeType ?? ""),
-                                        let barcodeImage = generateBarcodeImage(from: item.barcodeID ?? "N/A", type: barcodeType) {
+                                       let barcodeImage = generateBarcodeImage(from: item.barcodeID ?? "N/A", type: barcodeType) {
+
                                         VStack {
-                                            barcodeImage
-                                                .resizable()
-                                                .aspectRatio(contentMode: .fit)
-                                                .scaleEffect(x: isFullScreen ? 1.5 : 0.75, y: isFullScreen ? 1.5 : 0.75)
-                                                .padding(.top)
-                                                .rotationEffect(.degrees(rotationAngle))
-                                                .onTapGesture {
-                                                    withAnimation(.easeInOut(duration: 0.5)) {
-                                                        isFullScreen.toggle()
-                                                        rotationAngle += 90
+                                            if barcodeImage == Image(systemName: "xmark.circle") {
+                                                Text("This barcode is unsupported.")
+                                                    .font(.title)
+                                                    .foregroundColor(.red)
+                                                    .padding()
+                                            } else {
+                                                barcodeImage
+                                                    .resizable()
+                                                    .aspectRatio(contentMode: .fit)
+                                                    .scaleEffect(x: isFullScreen ? 1.5 : 0.75, y: isFullScreen ? 1.5 : 0.75)
+                                                    .padding(.top)
+                                                    .rotationEffect(.degrees(rotationAngle))
+                                                    .onTapGesture {
+                                                        withAnimation(.easeInOut(duration: 0.5)) {
+                                                            isFullScreen.toggle()
+                                                            rotationAngle += 90
+                                                        }
                                                     }
+                                                
+                                                if !isFullScreen {
+                                                    Text("\(item.barcodeID ?? "N/A")")
+                                                        .font(.footnote)
+                                                        .tint(.gray)
                                                 }
-                                        }
-                                        
-                                        if !isFullScreen {
-                                            Text("\(item.barcodeID ?? "N/A")")
-                                                .font(.footnote).tint(.gray)
+                                            }
                                         }
                                     }
                                 }
                             ) {
                                 HStack {
                                     if let barcodeType = BarcodeType(from: item.barcodeType ?? ""),
-                                       let barcodeImage = generateBarcodeImage(from: String(item.barcodeID ?? "Null"), type: barcodeType) {
+                                       let barcodeImage = generateBarcodeImage(from: String(item.barcodeID ?? "N/A"), type: barcodeType) {
                                         barcodeImage
                                             .resizable()
                                             .aspectRatio(contentMode: .fit)
@@ -132,6 +130,7 @@ struct ContentView: View {
                                     }
                                 }
                             }
+
                         }
                         .onDelete(perform: deleteItems)
                     }
@@ -249,13 +248,13 @@ struct ContentView: View {
     }
     
     func generateBarcodeImage(from code: String, type: BarcodeType) -> Image? {
-        let barcode = BarcodeGenerator.generateBarcode(from: code, type: type)
+        let (barcode, isUnsupported) = BarcodeGenerator.generateBarcode(from: code, type: type)
         return Image(uiImage: barcode)
     }
 }
 
 struct BarcodeGenerator {
-    static func generateBarcode(from string: String, type: BarcodeType) -> UIImage {
+    static func generateBarcode(from string: String, type: BarcodeType) -> (UIImage, isUnsupported: Bool) { {
         let data = string.data(using: .ascii)
         
         if let filter = CIFilter(name: type.filterName) {
@@ -265,26 +264,31 @@ struct BarcodeGenerator {
                 filter.setValue("M", forKey: "inputCorrectionLevel")
             }
             
-            if let output = filter.outputImage {
-                let transform = CGAffineTransform(scaleX: 10, y: 10)
-                let scaledOutput = output.transformed(by: transform)
-                if let cgImage = CIContext().createCGImage(scaledOutput, from: scaledOutput.extent) {
-                    return UIImage(cgImage: cgImage)
+            
+            
+            if type.filterName != "BarcodeUnsupported" {
+                if let output = filter.outputImage {
+                    let transform = CGAffineTransform(scaleX: 10, y: 10)
+                    let scaledOutput = output.transformed(by: transform)
+                    if let cgImage = CIContext().createCGImage(scaledOutput, from: scaledOutput.extent) {
+                        return (UIImage(cgImage: cgImage), true)
+                    }
                 }
             }
         }
-        return UIImage(systemName: "xmark.circle")!
+        return (UIImage(systemName: "xmark.circle")!, false)
+    }()
     }
-}
-
-private let numberFormatter: NumberFormatter = {
-    let formatter = NumberFormatter()
-    formatter.numberStyle = .decimal
-    return formatter
-}()
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
+    
+    private let numberFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return formatter
+    }()
+    
+    struct ContentView_Previews: PreviewProvider {
+        static var previews: some View {
+            ContentView()
+        }
     }
 }

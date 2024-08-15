@@ -77,16 +77,11 @@ struct ContentView: View {
                         ForEach(items) { item in
                             NavigationLink(
                                 destination: VStack {
-                                    if let barcodeType = BarcodeType(from: item.barcodeType ?? ""),
-                                       let barcodeImage = generateBarcodeImage(from: item.barcodeID ?? "N/A", type: barcodeType) {
-
+                                    if let barcodeType = BarcodeType(from: item.barcodeType ?? "") {
+                                        let (barcodeImage, isUnsupported) = generateBarcodeImage(from: item.barcodeID ?? "N/A", type: barcodeType)
+                                        
                                         VStack {
-                                            if barcodeImage == Image(systemName: "xmark.circle") {
-                                                Text("This barcode is unsupported.")
-                                                    .font(.title)
-                                                    .foregroundColor(.red)
-                                                    .padding()
-                                            } else {
+                                            if isUnsupported {
                                                 barcodeImage
                                                     .resizable()
                                                     .aspectRatio(contentMode: .fit)
@@ -105,14 +100,23 @@ struct ContentView: View {
                                                         .font(.footnote)
                                                         .tint(.gray)
                                                 }
+                                                
+                                            } else {
+                                                Text("This barcode is unsupported.")
+                                                    .font(.title)
+                                                    
+                                                    .padding()
+                                                
                                             }
                                         }
                                     }
+
+
                                 }
                             ) {
                                 HStack {
-                                    if let barcodeType = BarcodeType(from: item.barcodeType ?? ""),
-                                       let barcodeImage = generateBarcodeImage(from: String(item.barcodeID ?? "N/A"), type: barcodeType) {
+                                    if let barcodeType = BarcodeType(from: item.barcodeType ?? "") {
+                                        let (barcodeImage, isUnsupported) = generateBarcodeImage(from: item.barcodeID ?? "N/A", type: barcodeType)
                                         barcodeImage
                                             .resizable()
                                             .aspectRatio(contentMode: .fit)
@@ -247,10 +251,11 @@ struct ContentView: View {
         }
     }
     
-    func generateBarcodeImage(from code: String, type: BarcodeType) -> Image? {
+    func generateBarcodeImage(from code: String, type: BarcodeType) -> (Image, Bool) {
         let (barcode, isUnsupported) = BarcodeGenerator.generateBarcode(from: code, type: type)
-        return Image(uiImage: barcode)
+        return (Image(uiImage: barcode), isUnsupported)
     }
+
 }
 
 struct BarcodeGenerator {

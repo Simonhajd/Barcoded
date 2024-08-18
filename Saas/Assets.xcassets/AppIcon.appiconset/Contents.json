@@ -1,7 +1,31 @@
 {
   "images" : [
     {
-      "filename" : "Untitled-2 copy.png",
+      "filename" : "monoArtboard 2_2.png",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "size" : "1024x1024"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "monoArtboard 2_1.png",
+      "idiom" : "universal",
+      "platform" : "ios",
+      "size" : "1024x1024"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "tinted"
+        }
+      ],
+      "filename" : "monoArtboard 2_2 1.png",
       "idiom" : "universal",
       "platform" : "ios",
       "size" : "1024x1024"
